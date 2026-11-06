@@ -1,0 +1,37 @@
+name: academic_os
+description: A simple Flutter academic task and course manager.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_secure_storage: ^9.0.0
+  sqflite: ^2.3.3
+  path: ^1.9.0
+  file_picker: ^10.2.0
+  flutter_pdfview: ^1.2.3
+  crypto: ^3.0.6
+  google_sign_in: ^6.2.1
+  local_auth: ^2.2.0
+  flutter_local_notifications: ^18.0.0
+  timezone: ^0.9.4
+  flutter_riverpod: ^2.6.1
+  shared_preferences: ^2.3.0
+  sqflite_common_ffi: ^2.3.3
+  sqflite_common_ffi_web: ^1.0.0
+  pdf_text: ^0.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
