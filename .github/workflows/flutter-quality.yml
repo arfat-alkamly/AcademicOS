@@ -71,6 +71,12 @@ jobs:
           warnings = [line for line in diagnostics if line.startswith("WARNING|")]
           infos = [line for line in diagnostics if line.startswith("INFO|")]
 
+          if not diagnostics and analyze_status != 0:
+              print("Dart analyzer failed without structured diagnostics.")
+              with open("flutter-analyze.machine.log", encoding="utf-8") as report:
+                  print(report.read()[:4000])
+              sys.exit(2)
+
           for error in errors:
               print(error)
 
