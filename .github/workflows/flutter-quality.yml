@@ -97,12 +97,12 @@ jobs:
         run: flutter test --no-pub
 
       - name: Build Android debug APK
-        run: flutter build apk --debug --no-pub
+        run: flutter build apk --debug --split-per-abi --no-pub
 
       - name: Upload Android debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: academicos-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: academicos-android-debug-split-apks
+          path: build/app/outputs/flutter-apk/*.apk
           if-no-files-found: error
           retention-days: 14
