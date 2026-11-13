@@ -106,8 +106,12 @@ class AcademicAssistantService {
         break;
       case AcademicIntent.generalQuery:
       default:
+        final courseNames = courses.map((course) => course.name).join('، ');
+        final coursesSummary = courseNames.isEmpty
+            ? 'لا توجد مواد مسجلة حالياً'
+            : 'المواد المسجلة: $courseNames';
         response =
-            'ملفك الأكاديمي الآن: لديك ${courses.length} مادة، ${tasks.length} مهمة، ${dashboard.urgentTasks} مهمة عاجلة، و${dashboard.upcomingExams} اختبار/اختبارات قادمة. '
+            'ملفك الأكاديمي الآن: لديك ${courses.length} مادة ($coursesSummary)، ${tasks.length} مهمة، ${dashboard.urgentTasks} مهمة عاجلة، و${dashboard.upcomingExams} اختبار/اختبارات قادمة. '
             'حالة الدراسة الحالية ${dashboard.studyHealthScore.round()}%، والرسالة الذهبية اليوم: ${dashboard.nextPriorityAction}';
         break;
     }
