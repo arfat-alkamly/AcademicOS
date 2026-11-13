@@ -52,7 +52,7 @@ void main() {
           ExamModel(
             id: 1,
             title: 'Midterm',
-            examDate: DateTime(2026, 10, 20),
+            examDate: DateTime.now().add(const Duration(days: 7)),
             courseName: 'Math',
           ),
         ],
