@@ -26,10 +26,12 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
         with:
-          packages: 'platform-tools;platforms;android-28'
+          packages: 'platform-tools'
 
-      - name: Install required Android NDK
-        run: sdkmanager "ndk;27.0.12077973"
+      - name: Install required Android SDK platform and NDK
+        run: |
+          sdkmanager "platforms;android-28"
+          sdkmanager "ndk;27.0.12077973"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
