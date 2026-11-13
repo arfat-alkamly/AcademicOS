@@ -45,6 +45,7 @@ android {
 dependencies {
     // Required by flutter_local_notifications for Java API desugaring.
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    implementation("androidx.appcompat:appcompat:1.7.1")
 }
 
 flutter {
