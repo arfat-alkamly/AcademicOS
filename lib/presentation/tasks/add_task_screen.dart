@@ -1,6 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../data/database/database_helper.dart';
+import '../../data/models/task_model.dart';
+import '../../domain/entities/task_entity.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -13,6 +14,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
   bool _isLoading = false;
   // New UI state (preserve existing names above)
   String _priority = 'متوسطة';
@@ -25,6 +27,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   void dispose() {
     _titleController.dispose();
     _descController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -32,23 +35,42 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
 
-    final Map<String, dynamic> taskMap = {
-      'title': _titleController.text.trim(),
-      'description': _descController.text.trim(),
-      'isCompleted': 0,
-      'priority': _priority,
-      'type': _taskType,
-      'repeat': _repeat,
-      'dueDate': _dueDate?.toIso8601String(),
-      'dueTime': _dueTime != null
-          ? '${_dueTime!.hour.toString().padLeft(2, '0')}:${_dueTime!.minute.toString().padLeft(2, '0')}'
-          : null,
-    };
+    final dueDateTime = _dueDate == null
+        ? null
+        : DateTime(
+            _dueDate!.year,
+            _dueDate!.month,
+            _dueDate!.day,
+            _dueTime?.hour ?? 0,
+            _dueTime?.minute ?? 0,
+          );
+
+    final task = TaskModel(
+      title: _titleController.text.trim(),
+      description: _descController.text.trim(),
+      type: switch (_taskType) {
+        'دراسة' || 'تسليم' => TaskType.homework,
+        'قراءة' || 'مراجعة' => TaskType.review,
+        _ => TaskType.other,
+      },
+      priority: switch (_priority) {
+        'منخفضة' => TaskPriority.low,
+        'عالية' => TaskPriority.high,
+        _ => TaskPriority.medium,
+      },
+      recurrence: switch (_repeat) {
+        'يومي' => TaskRecurrence.daily,
+        'أسبوعي' => TaskRecurrence.weekly,
+        'شهري' => TaskRecurrence.monthly,
+        _ => TaskRecurrence.once,
+      },
+      dueDate: dueDateTime,
+      isCompleted: false,
+      notes: _notesController.text.trim(),
+    );
 
     try {
-      await DatabaseHelper.instance.insertTask(taskMap);
-
-      scheduleMicrotask(() {});
+      await DatabaseHelper.instance.insertTask(task);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,8 +85,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         const SnackBar(content: Text('حدث خطأ أثناء حفظ المهمة.')),
       );
     } finally {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -134,6 +157,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     _buildTimePicker(),
                     const SizedBox(height: 12),
                     TextFormField(
+                      controller: _notesController,
                       decoration: InputDecoration(
                         labelText: 'ملاحظات داخلية',
                         prefixIcon: const Icon(Icons.note_outlined),
