@@ -6,7 +6,7 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import '../../core/services/local_summarizer_service.dart';
 
 // Optional: uses `pdf_text` package to extract PDF text when available.
-import 'package:pdf_text/pdf_text.dart' as pdf_text;
+import 'package:flutter_pdf_text/flutter_pdf_text.dart' as pdf_text;
 
 class DocumentViewerScreen extends StatefulWidget {
   final String filePath;
