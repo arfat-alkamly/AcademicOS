@@ -13,6 +13,19 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 
+// pdf_text 0.5.0 requests the original JCenter-only coordinate
+// com.tom_roush:pdfbox-android:1.8.10.1. JCenter is no longer a
+// reliable source, so redirect that legacy request to the compatible
+// 1.8.10.3 artifact published on Maven Central under the corrected group.
+subprojects {
+    configurations.configureEach {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.tom_roush:pdfbox-android"))
+                .using(module("com.tom-roush:pdfbox-android:1.8.10.3"))
+        }
+    }
+}
+
 // pdf_text 0.5.0 predates Android Gradle Plugin 8 and does not declare
 // an Android namespace. Derive it from the plugin's own manifest instead
 // of hard-coding a third-party package name or modifying the pub cache.
