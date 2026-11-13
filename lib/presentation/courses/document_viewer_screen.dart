@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import '../../core/services/local_summarizer_service.dart';
 
-// Optional: uses `pdf_text` package to extract PDF text when available.
+// Extracts PDF text locally with flutter_pdf_text.
 import 'package:flutter_pdf_text/flutter_pdf_text.dart' as pdf_text;
 
 class DocumentViewerScreen extends StatefulWidget {
@@ -27,10 +27,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       final file = File(widget.filePath);
       if (!file.existsSync()) return '';
 
-      // Attempt to use pdf_text package which works offline.
+      // Extract text locally without uploading the document.
       final doc = await pdf_text.PDFDoc.fromFile(file);
-      final text = await doc.text;
-      return text ?? '';
+      return await doc.text;
     } catch (e) {
       // If extraction fails, return empty string so summarizer returns empty.
       debugPrint('PDF text extraction failed: $e');
@@ -44,7 +43,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
       final rawText = await _extractTextFromPdf();
       if (!mounted) return;
       if (rawText.trim().isEmpty) {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('لم أتمكن من استخراج نص من الملف.')),
         );
@@ -61,11 +59,6 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         builder: (context) {
-          final combined = <String>[];
-          combined.addAll(summary.coreConcepts);
-          combined.addAll(summary.keyPoints);
-          combined.add(summary.quickSummary);
-
           return Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -138,8 +131,9 @@ class _DocumentViewerScreenState extends State<DocumentViewerScreen> {
         },
       );
     } finally {
-      if (!mounted) return;
-      setState(() => _isSummarizing = false);
+      if (mounted) {
+        setState(() => _isSummarizing = false);
+      }
     }
   }
 
