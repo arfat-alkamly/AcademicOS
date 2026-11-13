@@ -7,6 +7,7 @@ import '../../domain/usecases/auth_use_cases.dart';
 import '../../domain/usecases/course_use_cases.dart';
 import '../../domain/usecases/task_use_cases.dart';
 import 'pin_lock_screen.dart';
+import 'login_screen.dart';
 import '../home/home_screen.dart';
 import '../onboarding/onboarding_screen.dart';
 
@@ -42,6 +43,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
   bool _isLoading = true;
   bool _isLoggedIn = false;
   bool _isAppLocked = false;
+  bool _requiresLogin = false;
 
   @override
   void initState() {
@@ -52,6 +54,19 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
 
   Future<void> _checkAuthentication() async {
     try {
+      final logoutRequired =
+          await _secureStorageService.isAuthLogoutRequired();
+      if (logoutRequired) {
+        if (!mounted) return;
+        setState(() {
+          _requiresLogin = true;
+          _isLoggedIn = false;
+          _isAppLocked = false;
+          _isLoading = false;
+        });
+        return;
+      }
+
       final active = await widget.authUseCases.isLoggedIn.call();
 
       if (!AppPlatform.shouldUseNativeSecurity()) {
@@ -87,10 +102,30 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
       debugPrint(
         'AuthGateScreen._checkAuthentication error: $error\n$stackTrace',
       );
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _handleLoginSuccess() async {
+    if (!mounted) return;
+    setState(() {
+      _requiresLogin = false;
+      _isLoggedIn = true;
+      _isAppLocked = false;
+    });
+  }
+
+  Future<void> _handleContinueAsGuest() async {
+    await _secureStorageService.clearAuthLogoutRequired();
+    if (!mounted) return;
+    setState(() {
+      _requiresLogin = false;
+      _isLoggedIn = false;
+      _isAppLocked = false;
+    });
   }
 
   Future<void> _handleAppLockVerified() async {
@@ -105,6 +140,14 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_requiresLogin) {
+      return LoginScreen(
+        authUseCases: widget.authUseCases,
+        onLoginSuccess: _handleLoginSuccess,
+        onContinueAsGuest: _handleContinueAsGuest,
+      );
     }
 
     if (_isLoggedIn && _isAppLocked) {
