@@ -39,7 +39,8 @@ class _CourseGrade {
   });
 
   double get total =>
-      (totalScore ?? (course.coursework + course.assignments + course.midterm + lab + fin))
+      (totalScore ??
+              (coursework + assignments + midterm + lab + finalExam))
           .clamp(0, 100)
           .toDouble();
 }
@@ -364,7 +365,7 @@ class _GradeDistributionScreenState extends State<GradeDistributionScreen> {
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           try {
                             final cw = (double.tryParse(cwCtrl.text) ?? 0)
                                 .clamp(0, 10)
@@ -390,20 +391,32 @@ class _GradeDistributionScreenState extends State<GradeDistributionScreen> {
                               course.lab = lab;
                               course.finalExam = fin;
                               course.totalScore =
-                                  (coursework + assignments + midterm + lab + finalExam)
+                                  (cw + asg + mid + lab + fin)
                                       .clamp(0, 100)
                                       .toDouble();
                             });
                             if (course.id != null) {
-                              _databaseHelper.updateCourseGrades(
+                              await _databaseHelper.updateCourseGrades(
                                 course.id!,
-                                midGrade: course.midterm,
-                                practicalGrade: course.lab,
-                                finalGrade: course.finalExam,
+                                midGrade: mid,
+                                practicalGrade: lab,
+                                finalGrade: fin,
                                 creditHours: course.credits,
                               );
                             }
-                            if (mounted) Navigator.pop(context, true);
+                            if (!mounted) return;
+                            setState(() {
+                              course.coursework = cw;
+                              course.assignments = asg;
+                              course.midterm = mid;
+                              course.lab = lab;
+                              course.finalExam = fin;
+                              course.totalScore =
+                                  (cw + asg + mid + lab + fin)
+                                      .clamp(0, 100)
+                                      .toDouble();
+                            });
+                            Navigator.pop(context, true);
                           } catch (_) {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
