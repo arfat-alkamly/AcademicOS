@@ -89,6 +89,29 @@ class NotificationService {
 
   int _lectureNotificationId(int id) => id + 30000;
 
+  Future<AndroidScheduleMode> _resolveAndroidScheduleMode() async {
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      return AndroidScheduleMode.exactAllowWhileIdle;
+    }
+
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    try {
+      final canScheduleExact = await androidPlugin?.canScheduleExactNotifications();
+      if (canScheduleExact == true) {
+        return AndroidScheduleMode.exactAllowWhileIdle;
+      }
+    } catch (error, stackTrace) {
+      debugPrint(
+        'NotificationService exact-alarm permission check failed: $error\\n$stackTrace',
+      );
+    }
+
+    // Keep reminders working when Android exact-alarm access is unavailable.
+    // Delivery may be delayed by Android battery optimizations.
+    return AndroidScheduleMode.inexactAllowWhileIdle;
+  }
+
   static int? _arabicWeekdayToDateTimeWeekday(String? weekdayName) {
     switch (weekdayName) {
       case 'السبت':
@@ -187,7 +210,7 @@ class NotificationService {
         ),
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: await _resolveAndroidScheduleMode(),
       );
     } catch (error, stackTrace) {
       debugPrint(
@@ -234,7 +257,7 @@ class NotificationService {
         ),
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: await _resolveAndroidScheduleMode(),
       );
     } catch (error, stackTrace) {
       debugPrint(
@@ -310,7 +333,7 @@ class NotificationService {
         ),
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: await _resolveAndroidScheduleMode(),
       );
     } catch (error, stackTrace) {
       debugPrint(
