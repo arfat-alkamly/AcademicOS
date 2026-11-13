@@ -16,7 +16,7 @@
 - `DatabaseHelper`
 - `TaskLocalDataSource`
 - `TaskRepositoryImpl`
-- تخزين SQLite مشفر عبر SQLCipher، وتحويل من/إلى `TaskEntity`.
+- تخزين SQLite عبر sqflite؛ ملف قاعدة البيانات غير مشفر حالياً، وتحويل من/إلى `TaskEntity`.
 
 ### Presentation
 - `HomeScreen`
@@ -36,7 +36,7 @@
   - تعديل مهمة
   - حذف مهمة
   - عرض قائمة مهام
-- تخزين محلي مشفر بـ SQLCipher
+- تخزين محلي عبر SQLite/sqflite؛ تشفير قاعدة البيانات بـ SQLCipher غير منفذ حالياً
 - استخدام `flutter_secure_storage` لحفظ مفتاح التشفير
 - فصل المسؤوليات مع إمكانية التوسع لاحقاً للجدول الدراسي والذكاء الاصطناعي
 
@@ -103,7 +103,7 @@ add_edit_task_screen.dart
 - `DatabaseHelper`
 - `TaskLocalDataSource`
 - `TaskRepositoryImpl`
-- تخزين SQLite مشفر عبر SQLCipher، وتحويل من/إلى `TaskEntity`.
+- تخزين SQLite عبر sqflite؛ ملف قاعدة البيانات غير مشفر حالياً، وتحويل من/إلى `TaskEntity`.
 
 ### Presentation
 - `HomeScreen`
@@ -123,7 +123,7 @@ add_edit_task_screen.dart
   - تعديل مهمة
   - حذف مهمة
   - عرض قائمة مهام
-- تخزين محلي مشفر بـ SQLCipher
+- تخزين محلي عبر SQLite/sqflite؛ تشفير قاعدة البيانات بـ SQLCipher غير منفذ حالياً
 - استخدام `flutter_secure_storage` لحفظ مفتاح التشفير
 - فصل المسؤوليات مع إمكانية التوسع لاحقاً للجدول الدراسي والذكاء الاصطناعي
 
