@@ -1,0 +1,57 @@
+name: Flutter quality gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Analyze, test, and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show toolchain
+        run: flutter --version
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze Dart sources
+        shell: bash
+        run: |
+          set +e
+          flutter analyze --no-pub 2>&1 | tee flutter-analyze.log
+          analyze_status=${PIPESTATUS[0]}
+          set -e
+          if grep -E '(^|[[:space:]])error[[:space:]]+-' flutter-analyze.log; then
+            echo "Dart analyzer reported errors."
+            exit 1
+          fi
+          if [ "$analyze_status" -ne 0 ]; then
+            echo "::warning::Analyzer reported existing warnings or infos; no analyzer errors were found."
+          fi
+
+      - name: Run tests
+        run: flutter test --no-pub
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug --no-pub
