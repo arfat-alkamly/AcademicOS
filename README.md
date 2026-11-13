@@ -126,7 +126,7 @@ Academic OS هو نظام إدارة أكاديمية مبني على Flutter و
 #### File and document support
 - `file_picker: ^10.2.0`
 - `flutter_pdfview: ^1.2.3`
-- `pdf_text: ^0.5.0`
+- `flutter_pdf_text: ^0.9.0`
 
 #### Development tools
 - `flutter_test`
@@ -142,7 +142,7 @@ Academic OS هو نظام إدارة أكاديمية مبني على Flutter و
 - إعدادات FFI للتطبيقات desktop وweb
 - إنشاء الجداول الأساسية للمهام، المقررات، الامتحانات، جدول المحاضرات، والمواد الدراسية
 - ترقية قاعدة البيانات عند تحديث الإصدار (`onUpgrade`)
-- تخزين كلمة المرور أو البيانات الحساسة عبر `SecureStorageService`
+- تخزين تفضيلات المستخدم الحساسة عبر `SecureStorageService` وبيانات المصادقة عبر `AuthSecureStorageService`؛ ملف SQLite نفسه غير مشفر حالياً
 
 ---
 

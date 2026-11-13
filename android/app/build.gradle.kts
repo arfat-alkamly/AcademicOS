@@ -7,11 +7,13 @@ plugins {
 
 android {
 
-    namespace = "com.example.academic_os"
+    namespace = "com.arfatalkamli.academicos"
     compileSdk = flutter.compileSdkVersion
     // NDK references removed — this project does not use native C++ code.
 
     compileOptions {
+        // Required by flutter_local_notifications for Java API desugaring.
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -22,10 +24,10 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.academic_os"
+        applicationId = "com.arfatalkamli.academicos"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -38,6 +40,12 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+}
+
+dependencies {
+    // Required by flutter_local_notifications for Java API desugaring.
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    implementation("androidx.appcompat:appcompat:1.7.1")
 }
 
 flutter {

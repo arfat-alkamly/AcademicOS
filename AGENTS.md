@@ -5,7 +5,7 @@ This guide helps AI agents understand Academic OS and make safe, architecture-re
 
 ## What this repository is
 - Flutter app using a lightweight Clean Architecture style.
-- Uses encrypted local storage via SQLCipher and `flutter_secure_storage`.
+- Uses SQLite through `sqflite`; the database file is **not currently encrypted at rest**. `flutter_secure_storage` protects selected secrets and preferences only.
 - Focuses on task management in the UI, with early course support in the data/domain layers.
 
 ## Core architecture
@@ -27,7 +27,7 @@ This guide helps AI agents understand Academic OS and make safe, architecture-re
 ## Important files
 - `lib/main.dart` — dependency composition and app bootstrap.
 - `lib/core/security/secure_storage_service.dart` — secure DB password management.
-- `lib/data/database/database_helper.dart` — SQLCipher database helper and migrations.
+- `lib/data/database/database_helper.dart` — SQLite database helper and schema migrations (not SQLCipher).
 - `lib/data/datasources/task_local_data_source.dart` — task local datasource.
 - `lib/data/repositories/task_repository_impl.dart` — task repository implementation.
 - `lib/domain/usecases/task_use_cases.dart` — task use cases.

@@ -58,7 +58,7 @@ class AcademicAssistantService {
     switch (parsedIntent.intent) {
       case AcademicIntent.calculateGpa:
         response =
-            'متوسط المواد الحالي هو ${averageText}، بينما لديك ${dashboard.totalCourses} مادة و${dashboard.totalTasks} مهمة إجمالية.'
+            'متوسط المواد الحالي هو $averageText، بينما لديك ${dashboard.totalCourses} مادة و${dashboard.totalTasks} مهمة إجمالية.'
             ' ${dashboard.atRiskCourses.isEmpty ? 'لا توجد مواد في خطر حاليًا.' : 'المواد الأكثر احتياجًا: ${dashboard.atRiskCourses.join('، ')}.'}'
             ' ${dashboard.studyHealthScore >= 75 ? 'حالتك الأكاديمية جيدة.' : 'تحتاج إلى تركيز أكبر في الخطة التالية.'}';
         break;
@@ -71,7 +71,7 @@ class AcademicAssistantService {
               upcomingExam.examDate.difference(DateTime.now()).inDays;
           response =
               'أقرب اختبار قادم هو "${upcomingExam.title}" في ${upcomingExam.examDate.day}/${upcomingExam.examDate.month}/${upcomingExam.examDate.year}. '
-              'يبقى ${remainingDays} يومًا فقط. أفضل خطة: مراجعة الوحدة الأساسية، ثم حل أسئلة سابقة، ثم اختبار قصير قبل الموعد.';
+              'يبقى $remainingDays يومًا فقط. أفضل خطة: مراجعة الوحدة الأساسية، ثم حل أسئلة سابقة، ثم اختبار قصير قبل الموعد.';
         }
         break;
       case AcademicIntent.createTask:
@@ -92,7 +92,7 @@ class AcademicAssistantService {
         final focusCourse =
             courses.isNotEmpty ? courses.first.name : 'المادة الأساسية';
         response =
-            'خطة المذاكرة المقترحة: تبدأ بـ 25 دقيقة مراجعة في ${focusCourse}، ثم 15 دقيقة تمارين، ثم 10 دقائق مراجعة سريعة. '
+            'خطة المذاكرة المقترحة: تبدأ بـ 25 دقيقة مراجعة في $focusCourse، ثم 15 دقيقة تمارين، ثم 10 دقائق مراجعة سريعة. '
             'الأولوية اليوم هي إكمال ${urgentTasks.isNotEmpty ? urgentTasks.first.title : 'أهم مهمة معلقة لديك'}.';
         break;
       case AcademicIntent.attendanceCheck:
@@ -105,9 +105,12 @@ class AcademicAssistantService {
             'أنت تعمل بشكل ممتاز؛ الترتيب اليومي ومراجعة أولويتك القريبة يمنحك نتائج قوية. ابدأ بأهم مهمة وركز 25 دقيقة فقط، ثم راجع هدفك.';
         break;
       case AcademicIntent.generalQuery:
-      default:
+        final courseNames = courses.map((course) => course.name).join('، ');
+        final coursesSummary = courseNames.isEmpty
+            ? 'لا توجد مواد مسجلة حالياً'
+            : 'المواد المسجلة: $courseNames';
         response =
-            'ملفك الأكاديمي الآن: لديك ${courses.length} مادة، ${tasks.length} مهمة، ${dashboard.urgentTasks} مهمة عاجلة، و${dashboard.upcomingExams} اختبار/اختبارات قادمة. '
+            'ملفك الأكاديمي الآن: لديك ${courses.length} مادة ($coursesSummary)، ${tasks.length} مهمة، ${dashboard.urgentTasks} مهمة عاجلة، و${dashboard.upcomingExams} اختبار/اختبارات قادمة. '
             'حالة الدراسة الحالية ${dashboard.studyHealthScore.round()}%، والرسالة الذهبية اليوم: ${dashboard.nextPriorityAction}';
         break;
     }
@@ -124,6 +127,3 @@ class AcademicAssistantService {
   }
 }
 
-extension _FirstOrNull<T> on List<T> {
-  T? get firstOrNull => isEmpty ? null : first;
-}

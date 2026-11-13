@@ -5,7 +5,6 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-import '../../core/security/secure_storage_service.dart';
 import '../models/course_model.dart';
 import '../models/exam_model.dart';
 import '../models/task_model.dart';
@@ -64,7 +63,6 @@ class DatabaseHelper {
   static const String scheduleTable = 'schedule';
 
   Database? _database;
-  final SecureStorageService _secureStorageService = SecureStorageService();
 
   Future<Database> get database async {
     if (_database != null && _database!.isOpen) return _database!;
