@@ -57,9 +57,11 @@ jobs:
           dart analyze --format machine > flutter-analyze.machine.log 2>&1
           analyze_status=$?
           set -e
-          python3 - <<'PY'
+          ANALYZE_STATUS="$analyze_status" python3 - <<'PY'
+          import os
           import sys
 
+          analyze_status = int(os.environ["ANALYZE_STATUS"])
           with open("flutter-analyze.machine.log", encoding="utf-8") as report:
               diagnostics = [
                   line.rstrip()
