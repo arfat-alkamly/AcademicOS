@@ -28,10 +28,11 @@ jobs:
         with:
           packages: 'platform-tools'
 
-      - name: Install required Android SDK platform and NDK
+      - name: Install required Android SDK platform, NDK, and CMake
         run: |
           sdkmanager "platforms;android-28"
           sdkmanager "ndk;27.0.12077973"
+          sdkmanager "cmake;3.22.1"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -44,6 +45,7 @@ jobs:
           flutter --version
           sdkmanager --list_installed | grep -F 'platforms;android-28'
           sdkmanager --list_installed | grep -F 'ndk;27.0.12077973'
+          sdkmanager --list_installed | grep -F 'cmake;3.22.1'
 
       - name: Resolve dependencies
         run: flutter pub get
