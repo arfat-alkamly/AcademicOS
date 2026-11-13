@@ -13,6 +13,8 @@ class AuthSecureStorageService {
       'academic_os_google_account_email';
   static const String _googleAccountNameKey = 'academic_os_google_account_name';
   static const String _authSessionActiveKey = 'academic_os_auth_session_active';
+  static const String _authLogoutRequiredKey =
+      'academic_os_auth_logout_required';
   static const String _appLockPinHashKey = 'academic_os_app_lock_pin_hash';
   static const String _appLockPinSaltKey = 'academic_os_app_lock_pin_salt';
   static const String _appLockBiometricEnabledKey =
@@ -90,14 +92,27 @@ class AuthSecureStorageService {
       key: _authSessionActiveKey,
       value: isActive ? 'true' : 'false',
     );
+    if (isActive) {
+      await clearAuthLogoutRequired();
+    }
   }
 
   Future<void> clearSessionData() async {
-    await _secureStorage.delete(key: _authUsernameKey);
-    await _secureStorage.delete(key: _authPasswordHashKey);
-    await _secureStorage.delete(key: _authPasswordSaltKey);
+    // Logging out must end the session without deleting the local account.
+    // Google identity data is cleared so a signed-out Google account cannot
+    // silently reactivate the session on the next app launch.
     await clearGoogleAccountData();
     await saveAuthSessionActive(false);
+    await _secureStorage.write(key: _authLogoutRequiredKey, value: 'true');
+  }
+
+  Future<bool> isAuthLogoutRequired() async {
+    final value = await _secureStorage.read(key: _authLogoutRequiredKey);
+    return value == 'true';
+  }
+
+  Future<void> clearAuthLogoutRequired() async {
+    await _secureStorage.delete(key: _authLogoutRequiredKey);
   }
 
   Future<bool> isAuthSessionActive() async {
