@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 allprojects {
     repositories {
         google()
@@ -31,6 +33,12 @@ subprojects {
 // of hard-coding a third-party package name or modifying the pub cache.
 subprojects {
     if (name == "pdf_text") {
+        // pdf_text's Java sources compile to JVM 1.8 while Kotlin 2.2
+        // defaults to JVM 17. Keep both outputs on the library's Java target.
+        tasks.withType<KotlinCompile>().configureEach {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+
         val manifestFile = file("src/main/AndroidManifest.xml")
         val manifestPackage = if (manifestFile.isFile) {
             Regex("""package\s*=\s*["']([^"']+)["']""")
