@@ -98,12 +98,12 @@ class AuthSecureStorageService {
   }
 
   Future<void> clearSessionData() async {
-    // Logging out must end the session without deleting the local account.
-    // Google identity data is cleared so a signed-out Google account cannot
-    // silently reactivate the session on the next app launch.
-    await clearGoogleAccountData();
-    await saveAuthSessionActive(false);
+    // Persist the logout intent first so a later storage failure cannot leave
+    // the previous session active or silently restore the Google session.
+    // Local username/password verifier data is intentionally retained.
     await _secureStorage.write(key: _authLogoutRequiredKey, value: 'true');
+    await saveAuthSessionActive(false);
+    await clearGoogleAccountData();
   }
 
   Future<bool> isAuthLogoutRequired() async {
