@@ -54,42 +54,29 @@ jobs:
         shell: bash
         run: |
           set +e
-          flutter analyze --no-pub --machine > flutter-analyze.json 2> flutter-analyze.stderr.log
+          dart analyze --format machine > flutter-analyze.machine.log 2>&1
           analyze_status=$?
           set -e
           python3 - <<'PY'
-          import json
           import sys
 
-          raw = open("flutter-analyze.json", encoding="utf-8").read()
-          json_start = raw.find("{")
-          if json_start < 0:
-              print("Analyzer did not produce machine-readable JSON.")
-              print(raw[:2000])
-              sys.exit(2)
+          with open("flutter-analyze.machine.log", encoding="utf-8") as report:
+              diagnostics = [
+                  line.rstrip()
+                  for line in report
+                  if "|" in line and line.split("|", 1)[0] in {"ERROR", "WARNING", "INFO"}
+              ]
 
-          try:
-              result, _ = json.JSONDecoder().raw_decode(raw, json_start)
-          except json.JSONDecodeError as error:
-              print(f"Could not parse analyzer JSON: {error}")
-              print(raw[:2000])
-              sys.exit(2)
+          errors = [line for line in diagnostics if line.startswith("ERROR|")]
+          warnings = [line for line in diagnostics if line.startswith("WARNING|")]
+          infos = [line for line in diagnostics if line.startswith("INFO|")]
 
-          diagnostics = result.get("diagnostics", [])
-          errors = [item for item in diagnostics if item.get("severity") == "ERROR"]
-          for item in errors:
-              location = item.get("location", {})
-              start = location.get("start", {})
-              print(
-                  f"ERROR {location.get('file', '<unknown>')}:"
-                  f"{start.get('line', 0)}:{start.get('column', 0)} "
-                  f"{item.get('code', '')}: {item.get('problemMessage', '')}"
-              )
+          for error in errors:
+              print(error)
 
           print(
               f"Analyzer summary: {len(errors)} errors, "
-              f"{sum(item.get('severity') == 'WARNING' for item in diagnostics)} warnings, "
-              f"{sum(item.get('severity') == 'INFO' for item in diagnostics)} infos."
+              f"{len(warnings)} warnings, {len(infos)} infos."
           )
           if errors:
               sys.exit(1)
