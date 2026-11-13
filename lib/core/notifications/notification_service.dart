@@ -97,13 +97,14 @@ class NotificationService {
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
     try {
-      final canScheduleExact = await androidPlugin?.canScheduleExactNotifications();
+      final canScheduleExact =
+          await androidPlugin?.canScheduleExactNotifications();
       if (canScheduleExact == true) {
         return AndroidScheduleMode.exactAllowWhileIdle;
       }
     } catch (error, stackTrace) {
       debugPrint(
-        'NotificationService exact-alarm permission check failed: $error\\n$stackTrace',
+        'NotificationService exact-alarm permission check failed: $error\n$stackTrace',
       );
     }
 
