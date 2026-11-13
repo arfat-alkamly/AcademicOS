@@ -5,11 +5,13 @@ import 'register_screen.dart';
 class LoginScreen extends StatefulWidget {
   final AuthUseCases authUseCases;
   final Future<void> Function() onLoginSuccess;
+  final Future<void> Function()? onContinueAsGuest;
 
   const LoginScreen({
     super.key,
     required this.authUseCases,
     required this.onLoginSuccess,
+    this.onContinueAsGuest,
   });
 
   @override
@@ -329,6 +331,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
+                    if (widget.onContinueAsGuest != null) ...[
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: _isLoading
+                            ? null
+                            : widget.onContinueAsGuest,
+                        child: const Text('متابعة بدون حساب'),
+                      ),
+                    ],
                     Align(
                       alignment: Alignment.center,
                       child: TextButton(
