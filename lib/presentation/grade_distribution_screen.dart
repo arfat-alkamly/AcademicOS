@@ -39,7 +39,7 @@ class _CourseGrade {
   });
 
   double get total =>
-      (totalScore ?? (coursework + assignments + midterm + lab + finalExam))
+      (totalScore ?? (course.coursework + course.assignments + course.midterm + lab + fin))
           .clamp(0, 100)
           .toDouble();
 }
@@ -915,6 +915,7 @@ class _GradeDistributionScreenState extends State<GradeDistributionScreen> {
                       )),
         ),
       ),
+    ),
     );
   }
 }
