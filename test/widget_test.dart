@@ -121,7 +121,9 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    // The app includes ongoing visual animations, so pump a bounded frame
+    // instead of waiting for every animation to settle forever.
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.byType(MaterialApp), findsOneWidget);
   });
