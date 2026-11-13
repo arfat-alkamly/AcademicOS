@@ -54,15 +54,15 @@ jobs:
         shell: bash
         run: |
           set +e
-          flutter analyze --no-pub 2>&1 | tee flutter-analyze.log
+          flutter analyze --no-pub --format machine 2>&1 | tee flutter-analyze.machine.log
           analyze_status=${PIPESTATUS[0]}
           set -e
-          if grep -E '(^|[[:space:]])error[[:space:]]+-' flutter-analyze.log; then
+          if grep -qE '^ERROR\\|' flutter-analyze.machine.log; then
             echo "Dart analyzer reported errors."
             exit 1
           fi
           if [ "$analyze_status" -ne 0 ]; then
-            echo "::warning::Analyzer reported existing warnings or infos; no analyzer errors were found."
+            echo "::warning::Analyzer reported warnings or infos; no analyzer errors were found."
           fi
 
       - name: Run tests
