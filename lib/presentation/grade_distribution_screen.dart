@@ -384,17 +384,6 @@ class _GradeDistributionScreenState extends State<GradeDistributionScreen> {
                             final fin = (double.tryParse(finalCtrl.text) ?? 0)
                                 .clamp(0, course.isPractical ? 50 : 60)
                                 .toDouble();
-                            setState(() {
-                              course.coursework = cw;
-                              course.assignments = asg;
-                              course.midterm = mid;
-                              course.lab = lab;
-                              course.finalExam = fin;
-                              course.totalScore =
-                                  (cw + asg + mid + lab + fin)
-                                      .clamp(0, 100)
-                                      .toDouble();
-                            });
                             if (course.id != null) {
                               await _databaseHelper.updateCourseGrades(
                                 course.id!,
