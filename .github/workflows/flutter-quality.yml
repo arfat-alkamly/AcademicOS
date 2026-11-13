@@ -48,28 +48,32 @@ jobs:
           sdkmanager --list_installed | grep -F 'cmake;3.22.1'
 
       - name: Resolve dependencies
-        run: flutter pub get
-
-      - name: Capture resolved dependency lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: resolved-pubspec-lock
-          path: pubspec.lock
-          if-no-files-found: error
+        run: flutter pub get --enforce-lockfile
 
       - name: Analyze Dart sources
         shell: bash
         run: |
           set +e
-          flutter analyze --no-pub --machine > flutter-analyze.json 2>&1
+          flutter analyze --no-pub --machine > flutter-analyze.json 2> flutter-analyze.stderr.log
           analyze_status=$?
           set -e
           python3 - <<'PY'
           import json
           import sys
 
-          with open("flutter-analyze.json", encoding="utf-8") as report:
-              result = json.load(report)
+          raw = open("flutter-analyze.json", encoding="utf-8").read()
+          json_start = raw.find("{")
+          if json_start < 0:
+              print("Analyzer did not produce machine-readable JSON.")
+              print(raw[:2000])
+              sys.exit(2)
+
+          try:
+              result, _ = json.JSONDecoder().raw_decode(raw, json_start)
+          except json.JSONDecodeError as error:
+              print(f"Could not parse analyzer JSON: {error}")
+              print(raw[:2000])
+              sys.exit(2)
 
           diagnostics = result.get("diagnostics", [])
           errors = [item for item in diagnostics if item.get("severity") == "ERROR"]
